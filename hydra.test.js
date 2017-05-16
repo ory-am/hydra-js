@@ -69,6 +69,17 @@ describe('services', () => {
       })
     })
 
+    test('validateToken() token introspection', () => {
+      nock('http://foo.localhost').post('/oauth2/introspect', 'token=foo').reply(200, {
+        active: true
+      })
+
+      const h = new Hydra(Object.assign({scope: 'hydra.clients'}, config))
+      return h.validateToken('foo').then((got) => {
+        expect(got.active).toEqual(true)
+      })
+    })
+
     test('consent challenge verification and consent response signing should work when a valid key is provided', () => new Promise((resolve, reject) => {
       const keys = {
         "keys": [

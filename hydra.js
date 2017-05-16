@@ -109,6 +109,22 @@ class Hydra {
       })
     })
   }
+
+  validateToken(token) {
+    return new Promise((resolve, reject) => {
+      return this.authenticate().then(() => {
+        request.post(`${this.endpoint}/oauth2/introspect`).send(`token=${token}`).authBearer(this.token.token.access_token).end((err, res) => {
+          if (err || !res.ok) {
+            reject({ error: 'Intospection failed: ' + err && err.message })
+            return
+          }
+          resolve(res.body)
+        })
+      }).catch((e) => {
+        console.error(e)
+      })
+    });
+  }
 }
 
 module.exports = Hydra
