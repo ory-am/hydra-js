@@ -7,19 +7,26 @@ const jwkToPem = require('jwk-to-pem')
 require('superagent-auth-bearer')(request)
 
 class Hydra {
-  constructor(config) {
-    this.config = Object.assign({
+  constructor(config = {}) {
+    let {
+      clientId = process.env.HYDRA_CLIENT_ID,
+      clientSecret = process.env.HYDRA_CLIENT_SECRET,
+      endpoint = process.env.HYDRA_URL,
+      scope = 'hydra.keys.get'} = config
+
+    this.config = {
       client: {
-        id: process.env.HYDRA_CLIENT_ID,
-        secret: process.env.HYDRA_CLIENT_SECRET,
+        id: clientId,
+        secret: clientSecret
       },
       auth: {
-        tokenHost: process.env.HYDRA_URL,
+        tokenHost: endpoint,
         authorizePath: '/oauth2/auth',
         tokenPath: '/oauth2/token'
-      }
-    }, config)
-    this.endpoint = this.config.auth.tokenHost
+      },
+    }
+    this.scope = scope
+    this.endpoint = endpoint
     this.token = null
   }
 
@@ -30,7 +37,7 @@ class Hydra {
       }
 
       this.oauth2 = OAuth2.create(this.config)
-      this.oauth2.clientCredentials.getToken({ scope: 'hydra.keys.get' }, (error, result) => {
+      this.oauth2.clientCredentials.getToken({ scope: this.scope }, (error, result) => {
         if (error) {
           return reject({ message: 'Could not retrieve access token: ' + error.message })
         }

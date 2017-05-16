@@ -6,7 +6,7 @@ var jwkToPem = require('jwk-to-pem')
 
 describe('services', () => {
   describe('Hydra', () => {
-    const config = {
+    const simpleOauth2config = {
       client: {
         id: 'client',
         secret: 'secret'
@@ -17,11 +17,16 @@ describe('services', () => {
         tokenPath: '/oauth2/token'
       }
     }
+    const config = {
+      clientId: simpleOauth2config.client.id,
+      clientSecret: simpleOauth2config.client.secret,
+      endpoint: simpleOauth2config.auth.tokenHost
+    }
 
     test('constructor should override default values', () => {
       const h = new Hydra(config)
-      expect(h.config).toEqual(config)
-      expect(h.endpoint).toEqual(config.auth.tokenHost)
+      expect(h.config).toEqual(simpleOauth2config)
+      expect(h.endpoint).toEqual(config.endpoint)
     })
 
     // set up oauth2 endpoint
