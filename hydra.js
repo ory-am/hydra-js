@@ -95,6 +95,20 @@ class Hydra {
       })
     })
   }
+
+  getClient(id) {
+    return new Promise((resolve, reject) => {
+      return this.authenticate().then(() => {
+        request.get(`${this.endpoint}/clients/${id}`).authBearer(this.token.token.access_token).end((err, res) => {
+          if (err || !res.ok) {
+            reject({ error: 'Could not retrieve client: ' + err && err.message })
+            return
+          }
+          resolve(res.body)
+        })
+      })
+    })
+  }
 }
 
 module.exports = Hydra

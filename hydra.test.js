@@ -57,6 +57,18 @@ describe('services', () => {
       })
     })
 
+    test('getClient() should fetch a client from the backend', () => {
+      const client = {
+        dummy: true
+      }
+      nock('http://foo.localhost').get('/clients/foo').reply(200, client)
+
+      const h = new Hydra(Object.assign({scope: 'hydra.clients'}, config))
+      return h.getClient('foo').then((got) => {
+        expect(got).toEqual(client)
+      })
+    })
+
     test('consent challenge verification and consent response signing should work when a valid key is provided', () => new Promise((resolve, reject) => {
       const keys = {
         "keys": [
