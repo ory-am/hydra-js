@@ -6,7 +6,23 @@ var jwkToPem = require('jwk-to-pem')
 
 describe('services', () => {
   describe('Hydra', () => {
-    const simpleOauth2config = {
+    process.env.HYDRA_CLIENT_ID = 'default_client'
+    process.env.HYDRA_CLIENT_SECRET = 'defulat_secret'
+    process.env.HYDRA_URL = 'http://default.localhost'
+    const defaults = {
+      client: {
+        id: process.env.HYDRA_CLIENT_ID,
+        secret: process.env.HYDRA_CLIENT_SECRET,
+      },
+      auth: {
+        tokenHost: process.env.HYDRA_URL,
+        authorizePath: '/oauth2/auth',
+        tokenPath: '/oauth2/token'
+      },
+      scope: 'hydra.keys.get'
+    }
+
+    const config = {
       client: {
         id: 'client',
         secret: 'secret'
@@ -15,18 +31,45 @@ describe('services', () => {
         tokenHost: 'http://foo.localhost',
         authorizePath: '/oauth2/auth',
         tokenPath: '/oauth2/token'
-      }
-    }
-    const config = {
-      clientId: simpleOauth2config.client.id,
-      clientSecret: simpleOauth2config.client.secret,
-      endpoint: simpleOauth2config.auth.tokenHost
+      },
+      scope: 'foo'
     }
 
     test('constructor should override default values', () => {
       const h = new Hydra(config)
-      expect(h.config).toEqual(simpleOauth2config)
-      expect(h.endpoint).toEqual(config.endpoint)
+      expect(h.config).toEqual({client: config.client, auth: config.auth})
+      expect(h.endpoint).toEqual(config.auth.tokenHost)
+      expect(h.scope).toEqual(config.scope)
+    })
+
+    test('constructor should keep default values', () => {
+      const h = new Hydra()
+      expect(h.config).toEqual({client: defaults.client, auth: defaults.auth})
+      expect(h.endpoint).toEqual(defaults.auth.tokenHost)
+      expect(h.scope).toEqual(defaults.scope)
+    })
+
+    test('constructor should allow parital override of default values', () => {
+      const expectedUrl = 'http://bar.localhost'
+      const expectedId = 'foo'
+
+      const h = new Hydra({
+        client: {id: expectedId},
+        auth: {tokenHost: expectedUrl}
+      })
+      expect(h.config).toEqual({
+        client: {
+          id: expectedId,
+          secret: defaults.client.secret
+        },
+        auth: {
+          tokenHost: expectedUrl,
+          authorizePath: defaults.auth.authorizePath,
+          tokenPath: defaults.auth.tokenPath
+        }
+      })
+      expect(h.endpoint).toEqual(expectedUrl)
+      expect(h.scope).toEqual(defaults.scope)
     })
 
     // set up oauth2 endpoint

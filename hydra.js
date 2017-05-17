@@ -9,10 +9,16 @@ require('superagent-auth-bearer')(request)
 class Hydra {
   constructor(config = {}) {
     let {
-      clientId = process.env.HYDRA_CLIENT_ID,
-      clientSecret = process.env.HYDRA_CLIENT_SECRET,
-      endpoint = process.env.HYDRA_URL,
-      scope = 'hydra.keys.get'} = config
+      client: {
+        id: clientId = process.env.HYDRA_CLIENT_ID,
+        secret: clientSecret = process.env.HYDRA_CLIENT_SECRET
+      } = {},
+      auth: {
+        tokenHost: endpoint = process.env.HYDRA_URL,
+        authorizePath: authorizePath = '/oauth2/auth',
+        tokenPath: tokenPath = '/oauth2/token'
+      } = {},
+      scope: scope = 'hydra.keys.get'} = config
 
     this.config = {
       client: {
@@ -21,8 +27,8 @@ class Hydra {
       },
       auth: {
         tokenHost: endpoint,
-        authorizePath: '/oauth2/auth',
-        tokenPath: '/oauth2/token'
+        authorizePath: authorizePath,
+        tokenPath: tokenPath
       },
     }
     this.scope = scope
@@ -120,10 +126,8 @@ class Hydra {
           }
           resolve(res.body)
         })
-      }).catch((e) => {
-        console.error(e)
       })
-    });
+    })
   }
 }
 
