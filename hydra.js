@@ -59,7 +59,7 @@ class Hydra {
       return this.authenticate().then(() => {
         request.get(`${this.endpoint}/keys/${set}/${kid}`).authBearer(this.token.token.access_token).end((err, res) => {
           if (err || !res.ok) {
-            reject({ error: 'Could not retrieve validation key: ' + err.message })
+            reject({ error: 'Could not retrieve validation key: ' + error })
             return
           }
           resolve(res.body.keys[0])
