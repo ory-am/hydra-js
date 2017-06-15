@@ -64,7 +64,7 @@ class Hydra {
           }
           resolve(res.body.keys[0])
         })
-      })
+      }, reject)
     })
   }
 
@@ -78,7 +78,7 @@ class Hydra {
           }
            resolve({ challenge: decoded })
         })
-      })
+      }, reject)
     })
   }
 
@@ -97,8 +97,8 @@ class Hydra {
             }
             resolve({ consent: token })
           })
-        })
-      })
+        }, reject)
+      }, reject)
     })
   }
 
@@ -112,7 +112,7 @@ class Hydra {
           }
           resolve(res.body)
         })
-      })
+      }, reject)
     })
   }
 
@@ -126,7 +126,7 @@ class Hydra {
           }
           resolve(res.body)
         })
-      })
+      }, reject)
     })
   }
 }
