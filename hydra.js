@@ -107,7 +107,7 @@ class Hydra {
       return this.authenticate().then(() => {
         request.get(`${this.endpoint}/clients/${id}`).authBearer(this.token.token.access_token).end((err, res) => {
           if (err || !res.ok) {
-            reject({ error: 'Could not retrieve client: ' + err && err.message })
+            reject({ error: 'Could not retrieve client: ' + error })
             return
           }
           resolve(res.body)
@@ -121,7 +121,7 @@ class Hydra {
       return this.authenticate().then(() => {
         request.post(`${this.endpoint}/oauth2/introspect`).send(`token=${token}`).authBearer(this.token.token.access_token).end((err, res) => {
           if (err || !res.ok) {
-            reject({ error: 'Intospection failed: ' + err && err.message })
+            reject({ error: 'Intospection failed: ' + error })
             return
           }
           resolve(res.body)
